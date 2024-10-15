@@ -1,9 +1,9 @@
 import express from "express";
 
-import {logger} from "@src/logging/loggingMiddleware"
-import { errorHandler, defaultErrorHandler } from "@src/error/errorMiddleware";
+import { defaultErrorHandler, errorHandler } from "@src/error/errorMiddleware";
+import { logger } from "@src/logging/loggingMiddleware";
 
-import outlayRouter from "@routes/outlays/main"
+import outlayRouter from "@routes/outlays/main";
 
 import { customCors, customHelmetSecurity } from "@src/security";
 import recieptRouter from "./routes/reciepts/main";
@@ -13,7 +13,7 @@ const port = 3000;
 
 // Security
 app.use(customHelmetSecurity);
-app.disable('x-powered-by');
+app.disable("x-powered-by");
 app.use(customCors());
 
 app.use("/", logger);
@@ -25,5 +25,5 @@ app.use("/", errorHandler);
 app.use("/", defaultErrorHandler);
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+	console.log(`Listening on port ${port}`);
 });

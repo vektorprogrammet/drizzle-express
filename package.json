@@ -8,12 +8,13 @@
     "once": "tsx ./src/main.ts",
     "watch": "tsx watch ./src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:generate": "pnpm drizzle-kit generate --config=db/config/drizzle.config.ts",
-    "db:migrate": "pnpm drizzle-kit migrate --config=db/config/drizzle.config.ts",
-    "db:studio": "pnpm drizzle-kit studio --config=db/config/drizzle.config.ts"
+    "format": "biome format --write ./src ./db",
+    "lint": "biome lint --write ./src ./db",
+    "check": "biome check --write ./src ./db",
+    "db:generate": "drizzle-kit generate --config=db/config/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=db/config/drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=db/config/drizzle.config.ts"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
@@ -27,6 +28,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.3",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.7.5",

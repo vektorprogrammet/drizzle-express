@@ -1,9 +1,8 @@
-import { z } from "zod";
-import { Result } from "@src/error/types";
+import type { Result } from "@src/error/types";
 import { DatabaseError } from "pg-protocol";
+import { z } from "zod";
 
 const pgErrorCodes = {
-
 	"00000": "successful_completion",
 
 	"01000": "warning",
@@ -446,87 +445,90 @@ const pgErrorCodes = {
 
 	"72000": "snapshot_too_old",
 
-	"F0000": "config_file_error",
+	F0000: "config_file_error",
 
-	"F0001": "lock_file_exists",
+	F0001: "lock_file_exists",
 
-	"HV000": "fdw_error",
+	HV000: "fdw_error",
 
-	"HV005": "fdw_column_name_not_found",
+	HV005: "fdw_column_name_not_found",
 
-	"HV002": "fdw_dynamic_parameter_value_needed",
+	HV002: "fdw_dynamic_parameter_value_needed",
 
-	"HV010": "fdw_function_sequence_error",
+	HV010: "fdw_function_sequence_error",
 
-	"HV021": "fdw_inconsistent_descriptor_information",
+	HV021: "fdw_inconsistent_descriptor_information",
 
-	"HV024": "fdw_invalid_attribute_value",
+	HV024: "fdw_invalid_attribute_value",
 
-	"HV007": "fdw_invalid_column_name",
+	HV007: "fdw_invalid_column_name",
 
-	"HV008": "fdw_invalid_column_number",
+	HV008: "fdw_invalid_column_number",
 
-	"HV004": "fdw_invalid_data_type",
+	HV004: "fdw_invalid_data_type",
 
-	"HV006": "fdw_invalid_data_type_descriptors",
+	HV006: "fdw_invalid_data_type_descriptors",
 
-	"HV091": "fdw_invalid_descriptor_field_identifier",
+	HV091: "fdw_invalid_descriptor_field_identifier",
 
-	"HV00B": "fdw_invalid_handle",
+	HV00B: "fdw_invalid_handle",
 
-	"HV00C": "fdw_invalid_option_index",
+	HV00C: "fdw_invalid_option_index",
 
-	"HV00D": "fdw_invalid_option_name",
+	HV00D: "fdw_invalid_option_name",
 
-	"HV090": "fdw_invalid_string_length_or_buffer_length",
+	HV090: "fdw_invalid_string_length_or_buffer_length",
 
-	"HV00A": "fdw_invalid_string_format",
+	HV00A: "fdw_invalid_string_format",
 
-	"HV009": "fdw_invalid_use_of_null_pointer",
+	HV009: "fdw_invalid_use_of_null_pointer",
 
-	"HV014": "fdw_too_many_handles",
+	HV014: "fdw_too_many_handles",
 
-	"HV001": "fdw_out_of_memory",
+	HV001: "fdw_out_of_memory",
 
-	"HV00P": "fdw_no_schemas",
+	HV00P: "fdw_no_schemas",
 
-	"HV00J": "fdw_option_name_not_found",
+	HV00J: "fdw_option_name_not_found",
 
-	"HV00K": "fdw_reply_handle",
+	HV00K: "fdw_reply_handle",
 
-	"HV00Q": "fdw_schema_not_found",
+	HV00Q: "fdw_schema_not_found",
 
-	"HV00R": "fdw_table_not_found",
+	HV00R: "fdw_table_not_found",
 
-	"HV00L": "fdw_unable_to_create_execution",
+	HV00L: "fdw_unable_to_create_execution",
 
-	"HV00M": "fdw_unable_to_create_reply",
+	HV00M: "fdw_unable_to_create_reply",
 
-	"HV00N": "fdw_unable_to_establish_connection",
+	HV00N: "fdw_unable_to_establish_connection",
 
-	"P0000": "plpgsql_error",
+	P0000: "plpgsql_error",
 
-	"P0001": "raise_exception",
+	P0001: "raise_exception",
 
-	"P0002": "no_data_found",
+	P0002: "no_data_found",
 
-	"P0003": "too_many_rows",
+	P0003: "too_many_rows",
 
-	"P0004": "assert_failure",
+	P0004: "assert_failure",
 
-	"XX000": "internal_error",
+	XX000: "internal_error",
 
-	"XX001": "data_corrupted",
+	XX001: "data_corrupted",
 
-	"XX002": "index_corrupted"
+	XX002: "index_corrupted",
 } as const;
 
 export type pgErrorCode = keyof typeof pgErrorCodes;
-export type pgErrorName = typeof pgErrorCodes[pgErrorCode];
+export type pgErrorName = (typeof pgErrorCodes)[pgErrorCode];
 
-export const pgErrorCodeSchema = z.enum(Object.keys(pgErrorCodes) as [pgErrorCode]);
-export const pgErrorNamesSchema = z.enum(Object.values(pgErrorCodes) as [typeof pgErrorCodes[pgErrorCode]]);
-
+export const pgErrorCodeSchema = z.enum(
+	Object.keys(pgErrorCodes) as [pgErrorCode],
+);
+export const pgErrorNamesSchema = z.enum(
+	Object.values(pgErrorCodes) as [(typeof pgErrorCodes)[pgErrorCode]],
+);
 
 export function isValidPgCode(code: string | undefined): code is pgErrorCode {
 	return pgErrorCodeSchema.safeParse(code).success;
@@ -535,22 +537,23 @@ export function isValidPgCode(code: string | undefined): code is pgErrorCode {
 export function getPgErrorName(code: pgErrorCode): pgErrorName {
 	return pgErrorCodes[code];
 }
-export function safeGetPgErrorName(code: string): Result<pgErrorName, z.ZodError > {
+export function safeGetPgErrorName(
+	code: string,
+): Result<pgErrorName, z.ZodError> {
 	const result = pgErrorCodeSchema.safeParse(code);
 	if (result.success) {
 		return {
 			success: true,
 			data: getPgErrorName(result.data),
-		}
-	} else {
-		return {
-			success: false,
-			error: result.error,
-		}
+		};
 	}
+	return {
+		success: false,
+		error: result.error,
+	};
 }
 export function isPgError(error: unknown): error is DatabaseError {
-    return error instanceof DatabaseError;
+	return error instanceof DatabaseError;
 }
 
 /* this function is possible to implement, but I would rather we didnt do it, since it demands code assertions
